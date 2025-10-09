@@ -1,0 +1,30 @@
+apiVersion:  apps/v1
+kind: Deployment
+metadata:
+  name: configmapenv
+  labels:
+    app: test-configmap-env
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: test-configmap-env
+  template:
+    metadata:
+      labels:
+        app: test-configmap-env
+    spec:
+      containers:
+        - name: configmap-test-env
+          image: nginx
+          # args:
+          #   - "-text=$(MESSAGE)"
+          envFrom:
+            - configMapRef:
+                name: testconfigmap
+          # env:
+          #   - name: MESSAGE
+          #     valueFrom:
+          #       configMapKeyRef:
+          #         name: testconfigmap
+          #         key: MESSAGE

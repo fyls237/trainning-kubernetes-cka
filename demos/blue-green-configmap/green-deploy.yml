@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: 
+    green-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: demo
+      version: green 
+  template:
+    metadata:
+      labels:
+        app: demo
+        version: green
+    spec:
+      containers: 
+        - name: demo-container
+          image: hashicorp/http-echo:0.2.3
+          args:
+            - "-text=$(MESSAGE)"
+          env: 
+            - name: MESSAGE
+              valueFrom:
+                configMapKeyRef:
+                  name: demo-configmap
+                  key: MESSAGE
+          ports:
+            - containerPort: 5678

@@ -1,0 +1,14 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: parallele-job
+spec:
+  parallelism: 2
+  completions: 5
+  template:
+    spec:
+      containers:
+      - name: parallele-job
+        image: busybox
+        command: ["echo", "Taches en parallèles"]
+      restartPolicy: Never

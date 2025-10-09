@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rolling-update
+  labels:
+    app: rolling
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: rolling
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  template:
+    metadata:
+      name: rolling-pod
+      labels:
+        app: rolling
+    spec:
+      containers:
+      - name: echo-container
+        image: hashicorp/http-echo:0.2.4
+        args:
+          - "-text=Hello Kubernetes!"
+        ports:
+          - containerPort: 5678
+

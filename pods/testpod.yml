@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: testpod
+  namespace: testnamespace
+  labels:
+    app: frontend
+    version: "1"
+spec:
+  containers:
+  - name: testcontainer
+    image: nginx
+    ports:
+    - containerPort: 80

@@ -1,0 +1,44 @@
+#cloud-config
+hostname: k8s-bastion
+fqdn: k8s-bastion.local
+manage_etc_hosts: true
+
+# Enable root login with SSH key
+disable_root: false
+ssh_pwauth: false
+
+users:
+  - default
+  - name: root
+    lock_passwd: false
+    ssh_authorized_keys:
+      - ${file("~/.ssh/id_rsa.pub")}
+
+# Basic packages for bastion host
+packages:
+  - curl
+  - wget
+  - vim
+  - htop
+  - net-tools
+  - dnsutils
+
+runcmd:
+  # Enable root SSH login
+  - sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin prohibit-password/' /etc/ssh/sshd_config
+  - sed -i 's/PermitRootLogin no/PermitRootLogin prohibit-password/' /etc/ssh/sshd_config
+  - systemctl restart sshd
+  
+  # Create .ssh directory for root
+  - mkdir -p /root/.ssh
+  - chmod 700 /root/.ssh
+  - cp /home/azureuser/.ssh/authorized_keys /root/.ssh/authorized_keys
+  - chmod 600 /root/.ssh/authorized_keys
+  - chown -R root:root /root/.ssh
+  
+  # Copy SSH private key to bastion for internal access (optional)
+  # Users should manually copy their private key to bastion if needed
+  - echo "Bastion host configured successfully" > /etc/motd
+  - echo "Use this host to jump to internal Kubernetes nodes" >> /etc/motd
+
+final_message: "Bastion host is ready after $UPTIME seconds"
