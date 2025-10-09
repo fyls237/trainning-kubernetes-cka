@@ -1,0 +1,13 @@
+apiVersion: batch/v1
+kind: Job 
+metadata:
+  name: job-backoflimit
+spec:
+  backoffLimit: 3
+  template:
+    spec:
+      containers: 
+      - name: job-backoflimit
+        image: busybox
+        command: ["sh", "-c", "exit 1"]
+      restartPolicy: Never

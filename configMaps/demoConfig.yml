@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: testconfigmap
+  labels:
+    app: ConfigMap
+data:
+  MESSAGE: "Hello from configMap test"
+  APP_MODE: "production"
+  

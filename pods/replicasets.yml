@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: first-replicaset
+  namespace: testnamespace
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      name: templatetaste
+      labels:
+        app: backend
+    spec:
+      containers:
+        - name: testreplica
+          image: hashicorp/http-echo:0.2.3
+          args:
+            - "-text=Hello Frome ReplicaSet testcontainer"
+          ports:
+          - containerPort: 5678
