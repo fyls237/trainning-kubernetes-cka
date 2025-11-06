@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: storage-sa
+  namespace: default
+  annotations:
+    azure.workload.identity/client-id: "493eb2d1-73ff-4188-b07a-160172cf630f"
+    azure.workload.identity/tenant-id: "ef90f1f8-dfd6-4cd7-81f1-bd37f18abb1e"
+  labels:
+    azure.workload.identity/use: "true"

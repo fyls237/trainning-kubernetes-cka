@@ -18,6 +18,8 @@ resource "azurerm_subnet" "k8s_subnet" {
   resource_group_name  = azurerm_resource_group.rg.name
   virtual_network_name = azurerm_virtual_network.vnet.name
   address_prefixes     = [var.subnet_address_prefix]
+
+  service_endpoints = [ "Microsoft.Storage" ]
 }
 
 # Network Security Group for Bastion

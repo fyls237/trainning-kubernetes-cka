@@ -22,8 +22,8 @@ admin_source_ip = "0.0.0.0/0"  # ⚠️ CHANGE THIS TO YOUR IP (e.g., "203.0.113
 ssh_public_key_path = "~/.ssh/id_rsa.pub"
 
 # Cluster Configuration
-master_count = 1  # Number of master nodes
-worker_count = 1  # Number of worker nodes
+master_count = 1 # Number of master nodes
+worker_count = 1 # Number of worker nodes
 
 # VM Sizes
 bastion_vm_size = "Standard_B1s"  # 1 vCPU, 1 GB RAM (bastion only)

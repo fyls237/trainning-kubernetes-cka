@@ -1,0 +1,14 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: azurefile-csi
+provisioner: file.csi.azure.com
+parameters:
+  resourceGroup: k8s-cluster-rg
+  storageAccount:  "k8ssvc"
+  shareName: k8s-storage
+  skuName: Standard_LRS
+  useDataPlaneAPI: "true"
+reclaimPolicy: Delete
+volumeBindingMode: Immediate
+allowVolumeExpansion: true
