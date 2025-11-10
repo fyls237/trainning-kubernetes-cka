@@ -51,6 +51,12 @@ resource "azurerm_linux_virtual_machine" "master" {
     hostname = "k8s-master-${count.index + 1}"
   }))
 
+  lifecycle {
+    ignore_changes = [
+      custom_data,
+    ]
+  }
+
   tags = {
     Environment = "Kubernetes"
     Role        = "Master"

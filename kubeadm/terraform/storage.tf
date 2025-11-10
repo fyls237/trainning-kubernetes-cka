@@ -43,13 +43,22 @@ resource "azurerm_user_assigned_identity" "storage_identity" {
 }
 
 # Federated Identity Credential for Workload Identity
-resource "azurerm_federated_identity_credential" "storage_fic" {
-  name                       = "k8s-storage-federation"
+resource "azurerm_federated_identity_credential" "storage_fic_controller" {
+  name                       = "k8s-storage-federation-controller"
   resource_group_name        = azurerm_resource_group.rg.name
   parent_id =  azurerm_user_assigned_identity.storage_identity.id
   audience = ["api://AzureADTokenExchange"]
   issuer = "https://kubernetes.default.svc.cluster.local"
-  subject = "system:serviceaccount:default:storage-sa"
+  subject = "system:serviceaccount:kube-system:azurefile-csi-controller-sa"
+}
+
+resource "azurerm_federated_identity_credential" "storage_fic_node" {
+  name = "k8s-storage-federation-node"
+  resource_group_name        = azurerm_resource_group.rg.name
+  parent_id =  azurerm_user_assigned_identity.storage_identity.id
+  audience = ["api://AzureADTokenExchange"]
+  issuer = "https://kubernetes.default.svc.cluster.local"
+  subject = "system:serviceaccount:kube-system:azurefile-csi-node-sa"
 }
 
 # Role Assignment to allow the Managed Identity to access the Storage Account

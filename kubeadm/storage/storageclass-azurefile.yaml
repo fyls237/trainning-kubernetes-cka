@@ -4,11 +4,19 @@ metadata:
   name: azurefile-csi
 provisioner: file.csi.azure.com
 parameters:
-  resourceGroup: k8s-cluster-rg
-  storageAccount:  "k8ssvc"
+  secretName: azure-storage-keys
+  secretNamespace: kube-system
+  storageAccount: k8ssvc
   shareName: k8s-storage
   skuName: Standard_LRS
-  useDataPlaneAPI: "true"
 reclaimPolicy: Delete
 volumeBindingMode: Immediate
 allowVolumeExpansion: true
+mountOptions:
+  - dir_mode=0777
+  - file_mode=0777
+  - uid=0
+  - gid=0
+  - mfsymlinks
+  - cache=strict
+  - nosharesock
