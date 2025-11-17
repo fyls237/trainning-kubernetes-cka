@@ -56,8 +56,6 @@ resource "azurerm_linux_virtual_machine" "worker" {
     Role        = "Worker"
   }
 }
-<<<<<<< HEAD
-=======
 
 resource "azurerm_dev_test_global_vm_shutdown_schedule" "worker_shutdown_schedule" {
   count = var.worker_count
@@ -72,4 +70,3 @@ resource "azurerm_dev_test_global_vm_shutdown_schedule" "worker_shutdown_schedul
   }
 
 }
->>>>>>> feat/azurefile

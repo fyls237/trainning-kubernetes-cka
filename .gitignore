@@ -1,6 +1,7 @@
 # Terraform files
 # Local .terraform directories
 **/.terraform/
+**/*.tfstate*
 
 # Terraform state
 *.tfstate
@@ -13,4 +14,6 @@
 /secrets/
 
 **/secret-azurestorage.yaml
+
+**/.terraform.lock.hcl
 

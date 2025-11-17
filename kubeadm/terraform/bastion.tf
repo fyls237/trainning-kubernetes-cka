@@ -65,8 +65,6 @@ resource "azurerm_linux_virtual_machine" "bastion" {
     Role        = "Bastion"
   }
 }
-<<<<<<< HEAD
-=======
  
 
 resource "azurerm_dev_test_global_vm_shutdown_schedule" "bastion_shutdown_schedule" {
@@ -81,4 +79,3 @@ resource "azurerm_dev_test_global_vm_shutdown_schedule" "bastion_shutdown_schedu
   }
 
 }
->>>>>>> feat/azurefile

@@ -64,8 +64,6 @@ output "vnet_name" {
   value       = azurerm_virtual_network.vnet.name
 }
 
-<<<<<<< HEAD
-=======
 # Storage 
 output "storage_account_name" {
   description = "Name of the storage account"
@@ -82,7 +80,6 @@ output "storage_account_id" {
   description = "ID du Storage Account"
 }
 
->>>>>>> feat/azurefile
 # Next Steps Information
 output "next_steps" {
   description = "Instructions for setting up Kubernetes cluster"

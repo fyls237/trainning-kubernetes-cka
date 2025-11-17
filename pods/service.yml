@@ -4,11 +4,7 @@ metadata:
   name: my-service
 spec:
   selector:
-<<<<<<< HEAD
-    app: backend 
-=======
     app: nginx-test 
->>>>>>> feat/azurefile
   ports: 
     - protocol: TCP
       port: 80
