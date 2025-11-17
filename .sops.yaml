@@ -1,0 +1,6 @@
+creation_rules:
+  - path_regex: '.*\.secrets\.ya?ml$'
+    encrypted_regex: '^(data|stringData)$'
+    pgp: 76F6501C6D56ECE1D90BD1050CE3B2921E2242AF
+  - path_regex: kubeadm/storage/.*\.yaml$
+    pgp: 76F6501C6D56ECE1D90BD1050CE3B2921E2242AF

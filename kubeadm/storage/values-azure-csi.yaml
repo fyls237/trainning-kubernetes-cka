@@ -1,0 +1,23 @@
+controller:
+  replicas: 2
+  serviceAccount:
+    create: true
+    name: azurefile-csi-controller-sa
+  
+node:
+  serviceAccount:
+    create: true
+    name: azurefile-csi-node-sa
+
+cloud: AzurePublicCloud
+
+linux:
+  enabled: true
+
+windows:
+  enabled: false
+
+storageAccountKeySecret:
+  enabled: true
+  name: azure-storage-secret
+  namespace: kube-system

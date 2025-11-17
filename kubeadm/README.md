@@ -482,8 +482,14 @@ k8s-worker-1   Ready    worker          2m    v1.28.x
 **Option A : SSH avec cat (recommandé)**
 
 ```bash
+<<<<<<< HEAD
 # Depuis votre PC
 ssh -J azureuser@<BASTION_IP> azureuser@10.0.1.7 \
+=======
+Cette commande utilise SSH avec ProxyJump pour récupérer le fichier `/etc/kubernetes/admin.conf` du master via le bastion et le place dans `~/.kube/config` sur votre machine locale.
+# Depuis votre PC
+ssh -J azureuser@<BASTION_PUBLIC_IP> azureuser@<MASTER_PRIVATE_IP> \
+>>>>>>> feat/azurefile
   'sudo cat /etc/kubernetes/admin.conf' > ~/.kube/config
 
 # Modifier les permissions
@@ -498,16 +504,27 @@ sudo cp /etc/kubernetes/admin.conf /home/azureuser/admin.conf
 sudo chown azureuser:azureuser /home/azureuser/admin.conf
 
 # Depuis votre PC
+<<<<<<< HEAD
 scp -o ProxyJump=azureuser@<BASTION_IP> \
   azureuser@10.0.1.7:/home/azureuser/admin.conf \
+=======
+scp -o ProxyJump=azureuser@<BASTION_PUBLIC_IP> \
+  azureuser@<MASTER_PRIVATE_IP>:/home/azureuser/admin.conf \
+>>>>>>> feat/azurefile
   ~/.kube/config
 ```
 
 ### 6.2 Créer un tunnel SSH
 
 ```bash
+<<<<<<< HEAD
 # Créer un tunnel pour rediriger le port 6443
 ssh -L 6443:10.0.1.7:6443 -N azureuser@<BASTION_IP>
+=======
+Cette commande ouvre un tunnel SSH du port local 6443 vers le port 6443 du master (via le bastion), permettant de rediriger l'API server sur localhost.
+# Créer un tunnel pour rediriger le port 6443
+ssh -L 6443:<MASTER_PRIVATE_IP>:6443 -N azureuser@<BASTION_PUBLIC_IP>
+>>>>>>> feat/azurefile
 
 # Laisser ce terminal ouvert
 ```
@@ -516,8 +533,14 @@ ssh -L 6443:10.0.1.7:6443 -N azureuser@<BASTION_IP>
 
 ```bash
 # Dans un autre terminal
+<<<<<<< HEAD
 # Modifier l'adresse du serveur API
 sed -i 's|https://10.0.1.7:6443|https://127.0.0.1:6443|g' ~/.kube/config
+=======
+Cette commande remplace l'adresse de l'API server dans le kubeconfig par `127.0.0.1` pour utiliser le tunnel SSH local.
+# Modifier l'adresse du serveur API
+sed -i 's|https://<MASTER_PRIVATE_IP>:6443|https://127.0.0.1:6443|g' ~/.kube/config
+>>>>>>> feat/azurefile
 ```
 
 ### 6.4 Désactiver la vérification TLS (dev/test uniquement)

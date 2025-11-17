@@ -65,3 +65,20 @@ resource "azurerm_linux_virtual_machine" "bastion" {
     Role        = "Bastion"
   }
 }
+<<<<<<< HEAD
+=======
+ 
+
+resource "azurerm_dev_test_global_vm_shutdown_schedule" "bastion_shutdown_schedule" {
+  location            = azurerm_resource_group.rg.location
+  virtual_machine_id  = azurerm_linux_virtual_machine.bastion.id
+  enabled =  true
+  daily_recurrence_time = "0200"
+  timezone              = "UTC"
+
+  notification_settings {
+    enabled = false
+  }
+
+}
+>>>>>>> feat/azurefile
