@@ -4,7 +4,7 @@ metadata:
   name: azurefile-csi
 provisioner: file.csi.azure.com
 parameters:
-  secretName: azure-storage-keys
+  secretName: azure-storage-secret
   secretNamespace: kube-system
   storageAccount: k8ssvc
   shareName: k8s-storage

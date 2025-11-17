@@ -19,5 +19,5 @@ windows:
 
 storageAccountKeySecret:
   enabled: true
-  name: azure-storage-keys
+  name: azure-storage-secret
   namespace: kube-system

@@ -62,3 +62,18 @@ resource "azurerm_linux_virtual_machine" "master" {
     Role        = "Master"
   }
 }
+
+
+resource "azurerm_dev_test_global_vm_shutdown_schedule" "master_shutdown_schedule" {
+  count = var.master_count
+  location            = azurerm_resource_group.rg.location
+  virtual_machine_id  = azurerm_linux_virtual_machine.master[count.index].id
+  enabled =  true
+  daily_recurrence_time = "0200"
+  timezone              = "UTC"
+
+  notification_settings {
+    enabled = false
+  }
+
+}

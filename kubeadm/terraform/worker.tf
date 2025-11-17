@@ -56,3 +56,17 @@ resource "azurerm_linux_virtual_machine" "worker" {
     Role        = "Worker"
   }
 }
+
+resource "azurerm_dev_test_global_vm_shutdown_schedule" "worker_shutdown_schedule" {
+  count = var.worker_count
+  location            = azurerm_resource_group.rg.location
+  virtual_machine_id  = azurerm_linux_virtual_machine.worker[count.index].id
+  enabled =  true
+  daily_recurrence_time = "0200"
+  timezone              = "UTC"
+
+  notification_settings {
+    enabled = false
+  }
+
+}
