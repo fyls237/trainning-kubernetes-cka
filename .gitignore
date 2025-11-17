@@ -12,6 +12,7 @@
 
 # Secrets
 /secrets/
+**/secret.yaml
 
 **/secret-azurestorage.yaml
 
