@@ -29,6 +29,19 @@ resource "azurerm_storage_share" "storage_file" {
   quota = "50"
 }
 
+resource "azurerm_storage_share" "storage_file_mysql" {
+  name = "mysql-storage"
+  storage_account_name = azurerm_storage_account.k8s_svc.name
+  quota = "50"
+}
+
+resource "azurerm_storage_share" "storage_file_wordpress" {
+  name = "wordpress-storage"
+  storage_account_name = azurerm_storage_account.k8s_svc.name
+  quota = "50"
+  
+}
+
 # Managed Identity for Storage Access
 resource "azurerm_user_assigned_identity" "storage_identity" {
   resource_group_name = var.resource_group_name
@@ -61,13 +74,6 @@ resource "azurerm_federated_identity_credential" "storage_fic_node" {
   subject = "system:serviceaccount:kube-system:azurefile-csi-node-sa"
 }
 
-# Role Assignment to allow the Managed Identity to access the Storage Account
-resource "azurerm_role_assignment" "storage_blob_reader" {
-  scope                = azurerm_storage_account.k8s_svc.id
-  role_definition_name = "Storage Blob Data Contributor"
-  principal_id         = azurerm_user_assigned_identity.storage_identity.principal_id
-  
-}
 
 # RBAC SMS access for the storage account
 resource "azurerm_role_assignment" "storage_smb_contributor" {
