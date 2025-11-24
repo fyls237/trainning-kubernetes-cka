@@ -1,0 +1,121 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wordpress-mysql
+  namespace: default
+  labels:
+    app: wordpress
+    tier: mysql
+spec:
+  selector:
+    matchLabels:
+      app: wordpress
+      tier: mysql
+  strategy:              
+    type: Recreate
+  template:              
+    metadata:
+      labels:
+        app: wordpress
+        tier: mysql
+    spec:
+      initContainers:
+      # ✅ NOUVEL InitContainer : Forcer la suppression complète
+      - name: cleanup-mysql-data
+        image: busybox:latest
+        command:
+        - sh
+        - -c
+        - |
+          set -x
+          echo "🧹 Nettoyage complet du répertoire MySQL..."
+          
+          # Supprimer TOUS les fichiers (même les liens symboliques)
+          if [ -d "/var/lib/mysql" ]; then
+            cd /var/lib/mysql
+            # Trouver et supprimer tous les fichiers (même hidden)
+            find . -mindepth 1 -delete
+            echo "✅ Répertoire complètement vidé"
+          fi
+          
+          # Vérifier
+          ls -la /var/lib/mysql/ || echo "Répertoire créé"
+          echo "✅ Cleanup terminé"
+        volumeMounts:
+        - name: mysql-persistent-storage
+          mountPath: "/var/lib/mysql/"
+      
+      containers: 
+      - image: mysql:8.0
+        name: mysql
+        
+        # ✅ AJOUTER : Variable d'environnement pour ignorer les redo logs corrompus
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-pass
+              key: password
+        - name: MYSQL_DATABASE
+          value: wordpress
+        - name: MYSQL_USER
+          value: wordpress
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-pass
+              key: password
+        
+        # ✅ AJOUTER : Arguments pour forcer la reconstruction des redo logs
+        args:
+        - "--innodb-log-file-size=50331648"
+        - "--innodb-flush-log-at-trx-commit=2"
+        - "--innodb-flush-method=O_DIRECT"
+        - "--skip-log-bin"
+        
+        livenessProbe:
+          exec:
+            command:
+            - mysqladmin
+            - ping
+            - -u
+            - root
+            - -p$(MYSQL_ROOT_PASSWORD)
+          initialDelaySeconds: 40
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 5
+        
+        readinessProbe:
+          exec:
+            command:
+            - mysqladmin
+            - ping
+              - -u
+              - root
+              - -p$(MYSQL_ROOT_PASSWORD)
+          initialDelaySeconds: 30
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+        
+        resources:
+          requests:
+            cpu: 150m
+            memory: 512Mi
+          limits:
+            cpu: 1000m
+            memory: 1Gi
+        
+        ports:
+        - containerPort: 3306
+          name: mysql
+        
+        volumeMounts:
+        - name: mysql-persistent-storage
+          mountPath: /var/lib/mysql
+      
+      volumes:
+      - name: mysql-persistent-storage
+        persistentVolumeClaim:    
+          claimName: mysql-pvc
