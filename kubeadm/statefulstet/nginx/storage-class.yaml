@@ -1,0 +1,21 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: nginx-storage-class
+provisioner: file.csi.azure.com
+parameters:
+  secretName: azure-storage-secret
+  secretNamespace: kube-system
+  storageAccount: k8ssvc
+  skuName: Standard_LRS
+reclaimPolicy: Delete
+volumeBindingMode: WaitForFirstConsumer
+allowVolumeExpansion: true
+mountOptions:
+  - dir_mode=0777
+  - file_mode=0777
+  - uid=0
+  - gid=0
+  - mfsymlinks
+  - cache=strict
+  - nosharesock
