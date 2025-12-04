@@ -1,0 +1,37 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: app-shop
+  namespace: prod-app-shop
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  ingressClassName: nginx
+  rules: 
+  - host: shop.local
+    http:
+      paths:
+      # Règle 2 : /api/v1 -> Backend (Paiement) avec réécriture d'URL
+      - path: /api/v1(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: svc-pay
+            port:
+              number: 5000
+      # Règle 3 : /admin -> Admin
+      - path: /admin
+        pathType: Prefix
+        backend:
+          service:
+            name: svc-admin
+            port:
+              number: 8080
+      # Règle 1 : / -> Frontend (doit être en dernier car c'est le plus générique)
+      - path: /
+        pathType: Prefix
+        backend:
+          service: 
+            name: svc-front
+            port: 
+              number: 80
