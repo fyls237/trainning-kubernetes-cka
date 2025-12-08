@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: sample-daemonset
+spec:
+  updateStrategy:
+    type: OnDelete
+  selector:
+    matchLabels:
+      app: sample-daemonset
+  template:
+    metadata:
+      labels:
+        app: sample-daemonset
+    spec:
+      containers:
+      - name: sample-container
+        image: nginx:latest
+        ports:
+        - containerPort: 80
