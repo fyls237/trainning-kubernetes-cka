@@ -6,6 +6,18 @@
 
 ## 📋 Table des matières
 
+### 🎓 Guides CKA Complets
+
+**Consultez les guides spécialisés dans chaque dossier :**
+
+- 📚 **[DaemonSet Guide](./daemonSet/README.md)** - Taint/Tolerations, troubleshooting Pending
+- 🌐 **[Ingress Guide](./ingress/README.md)** - Multi-service routing, path rewrite, TLS/HTTPS
+- 💾 **[Storage & Persistence Guide](./storage/README.md)** - PVC/PV, StorageClass, AccessModes
+- 🔐 **[StatefulSet Guide](./statefulset/README.md)** - Identité stable, DNS stable, volumeClaimTemplates
+- 📦 **[Stateful Applications Guide](./statefull-app/README.md)** - WordPress + MySQL, InitContainers, Secrets
+
+### Installation du Cluster
+
 1. [Architecture de l'infrastructure](#architecture)
 2. [Prérequis](#prérequis)
 3. [Phase 1 : Provisioning Infrastructure (Terraform)](#phase-1-provisioning)
