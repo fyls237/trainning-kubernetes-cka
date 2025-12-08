@@ -5,8 +5,21 @@ metadata:
   namespace: prod-app-shop
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /$2
+    cert-manager.io/cluster-issuer: selfsigned-issuer
+    # Rate limiting and headers Security for DDOS attacks
+    nginx.ingress.kubernetes.io/limit-rpm: "100" # Limit 100 requests per minute per IP
+    nginx.ingress.kubernetes.io/limit-burst-multiplier: "5" # Allow bursts of up to 5 times the rate limit
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      more_set_headers "X-Frame-Options: DENY"; # Prevent clickjacking
+      more_set_headers "X-XSS-Protection: 1; mode=block"; # Enable XSS protection
+      more_set_headers "X-Content-Type-Options: nosniff"; # Prevent the navigator from MIME-sniffing a response away from the declared content-type
+    nginx.ingress.kubernetes.io/load-balance: "round_robin" # Load Balancing method 
 spec:
   ingressClassName: nginx
+  tls:
+  - hosts:
+    - shop.local
+    secretName: shop-tls
   rules: 
   - host: shop.local
     http:
