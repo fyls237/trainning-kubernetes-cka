@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payment-api
+  namespace: prod-app-shop
+  labels:
+    app: app-shop
+    tier: backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: app-shop
+      tier: backend
+  template:
+    metadata:
+      labels:
+        app: app-shop
+        tier: backend
+    spec:
+      containers:
+      - name: payment-api
+        image: httpd:alpine
+        ports:
+        - containerPort: 80
+
+      
+
+

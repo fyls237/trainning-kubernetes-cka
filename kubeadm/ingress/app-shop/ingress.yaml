@@ -1,0 +1,50 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: app-shop
+  namespace: prod-app-shop
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    cert-manager.io/cluster-issuer: selfsigned-issuer
+    # Rate limiting and headers Security for DDOS attacks
+    nginx.ingress.kubernetes.io/limit-rpm: "100" # Limit 100 requests per minute per IP
+    nginx.ingress.kubernetes.io/limit-burst-multiplier: "5" # Allow bursts of up to 5 times the rate limit
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      more_set_headers "X-Frame-Options: DENY"; # Prevent clickjacking
+      more_set_headers "X-XSS-Protection: 1; mode=block"; # Enable XSS protection
+      more_set_headers "X-Content-Type-Options: nosniff"; # Prevent the navigator from MIME-sniffing a response away from the declared content-type
+    nginx.ingress.kubernetes.io/load-balance: "round_robin" # Load Balancing method 
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - shop.local
+    secretName: shop-tls
+  rules: 
+  - host: shop.local
+    http:
+      paths:
+      # Règle 2 : /api/v1 -> Backend (Paiement) avec réécriture d'URL
+      - path: /api/v1(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: svc-pay
+            port:
+              number: 5000
+      # Règle 3 : /admin -> Admin
+      - path: /admin
+        pathType: Prefix
+        backend:
+          service:
+            name: svc-admin
+            port:
+              number: 8080
+      # Règle 1 : / -> Frontend (doit être en dernier car c'est le plus générique)
+      - path: /
+        pathType: Prefix
+        backend:
+          service: 
+            name: svc-front
+            port: 
+              number: 80

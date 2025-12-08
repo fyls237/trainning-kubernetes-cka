@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: admin-tools
+  namespace: prod-app-shop
+  labels:
+    app: app-shop
+    tier: admin-tools
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: app-shop
+      tier: admin-tools
+  template:
+    metadata:
+      labels:
+        app: app-shop
+        tier: admin-tools
+    spec:
+      containers:
+      - name: admin-tools
+        image: nginx:alpine
+        ports:
+          - containerPort: 80
