@@ -19,3 +19,5 @@
 
 **/.terraform.lock.hcl
 
+
+**/*.pem

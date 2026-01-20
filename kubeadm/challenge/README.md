@@ -47,3 +47,12 @@ Le projet est divisé en 4 couches logiques :
 * **Autoscaling (HPA) :** Configuration du scaling automatique du Backend basé sur l'utilisation CPU.
 * **Maintenance :** Création d'un `CronJob` pour simuler une sauvegarde de la base de données chaque nuit.
 * **Observabilité :** Déploiement d'un `DaemonSet` en installent `Prometheus`, `Grafana` et `Loki` 
+
+
+### 🛠️ Phase 5 : Administration & Maintenance (Le "Boss de fin" CKA)
+
+**Objectif :** Maîtriser le cycle de vie du cluster et la gestion des accès.
+
+* **Backup & Restore :** Sauvegarde et restauration de la base **etcd** (le cerveau du cluster).
+* **Cluster Upgrade :** Simulation d'une mise à jour de version Kubernetes (ex: 1.29 -> 1.30) avec `kubeadm` sur le Control Plane et les Workers.
+* **RBAC Avancé :** Création d'utilisateurs et de ServiceAccounts avec des droits restreints (ex: un utilisateur "auditeur" qui ne peut que *lire* les logs).
