@@ -57,6 +57,30 @@ resource "azurerm_linux_virtual_machine" "worker" {
   }
 }
 
+# Data Disk for Workers (for DB storage etc)
+resource "azurerm_managed_disk" "worker_data_disk" {
+  count                = var.worker_count
+  name                 = "k8s-worker-${count.index + 1}-data"
+  location             = azurerm_resource_group.rg.location
+  resource_group_name  = azurerm_resource_group.rg.name
+  storage_account_type = "Standard_LRS"
+  create_option        = "Empty"
+  disk_size_gb         = 20
+
+  tags = {
+    Environment = "Kubernetes"
+    Role        = "Storage"
+  }
+}
+
+resource "azurerm_virtual_machine_data_disk_attachment" "worker_disk_attach" {
+  count              = var.worker_count
+  managed_disk_id    = azurerm_managed_disk.worker_data_disk[count.index].id
+  virtual_machine_id = azurerm_linux_virtual_machine.worker[count.index].id
+  lun                = 10
+  caching            = "ReadWrite"
+}
+
 resource "azurerm_dev_test_global_vm_shutdown_schedule" "worker_shutdown_schedule" {
   count = var.worker_count
   location            = azurerm_resource_group.rg.location

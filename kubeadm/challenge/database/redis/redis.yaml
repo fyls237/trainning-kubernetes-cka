@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: redis
+  namespace: prod-database
+  labels:
+    app: redis
+    tier: database
+spec:
+  selector:
+    matchLabels:
+      app: redis
+      tier: database
+  serviceName: "redis-service"
+  replicas: 1
+  minReadySeconds: 10
+  template:
+    metadata:
+      labels:
+        app: redis
+        tier: database
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+      - name: redis
+        image: redis:8.4.0
+        env: 
+        - name: REDIS_PASSWORD
+          value: "redispass"
+        - name: REDIS_DATA
+          value: "/data"
+        ports:
+        - containerPort: 6379
+          name: redis
+        volumeMounts:
+        - name: redisdata
+          mountPath: /data
+  volumeClaimTemplates:
+  - metadata:
+      name: redisdata
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: "nfs-client"
+      resources:
+        requests:
+          storage: 5Gi
