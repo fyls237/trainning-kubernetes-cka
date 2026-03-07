@@ -26,7 +26,10 @@ spec:
         image: redis:8.4.0
         env: 
         - name: REDIS_PASSWORD
-          value: "redispass"
+          valueFrom:
+            secretKeyRef:
+              name: redis-secret
+              key: password
         - name: REDIS_DATA
           value: "/data"
         ports:
