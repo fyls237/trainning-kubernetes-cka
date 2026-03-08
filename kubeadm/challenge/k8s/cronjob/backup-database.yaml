@@ -17,7 +17,7 @@ spec:
           restartPolicy: OnFailure
           containers:
           - name: backup
-            image: postgres:18
+            image: postgres:18.1-alpine
             command: [ "/bin/sh", "-c", "pg_dump -h postgres-service -U postgres -d portfolio_db -f /backup/backup_$(date +%Y%m%d_%H%M%S).sql" ]
             env:
               - name: PGPASSWORD

@@ -76,6 +76,107 @@ Déployé également en StatefulSet pour la persistance (optionnel pour du cache
 
 ---
 
+## 🔒 Gestion des Secrets (Sealed Secrets)
+
+Les mots de passe de PostgreSQL et Redis ne doivent **jamais** être stockés en clair dans Git.
+Nous utilisons **Sealed Secrets** (`bitnami.com/v1alpha1`) pour chiffrer les secrets avec la clé publique du cluster.
+
+### Architecture des secrets
+
+```
+database/
+├── postgres/
+│   ├── secret.yaml          ← Secret en clair (⚠️  NE PAS committer !)
+│   └── secret-sealed.yaml   ← Secret chiffré (✅ Sûr pour Git)
+└── redis/
+    ├── secret.yaml          ← Secret en clair (⚠️  NE PAS committer !)
+    └── secret-sealed.yaml   ← Secret chiffré (✅ Sûr pour Git)
+```
+
+### 📦 PostgreSQL Secret (`postgres-secret`)
+
+Le secret expose une clé `password` injectée dans le StatefulSet PostgreSQL et dans toute ressource qui en a besoin (backend, CronJob de backup).
+
+```yaml
+# secret.yaml (version lisible, usage local uniquement)
+apiVersion: v1
+kind: Secret
+metadata:
+  name: postgres-secret
+  namespace: prod-database
+type: Opaque
+data:
+  password: cG9zdGdyZXBhc3M=   # base64("postgrepass")
+```
+
+```yaml
+# secret-sealed.yaml (version chiffrée, prête pour GitOps)
+apiVersion: bitnami.com/v1alpha1
+kind: SealedSecret
+metadata:
+  name: postgres-secret
+  namespace: prod-database
+spec:
+  encryptedData:
+    password: <valeur chiffrée par kubeseal>
+```
+
+### ⚡ Redis Secret (`redis-secret`)
+
+Même principe : une clé `password` utilisée par le StatefulSet Redis.
+
+```yaml
+# secret.yaml (version lisible, usage local uniquement)
+apiVersion: v1
+kind: Secret
+metadata:
+  name: redis-secret
+  namespace: prod-database
+type: Opaque
+data:
+  password: cmVkaXNwYXNz   # base64("redispass")
+```
+
+### 🚀 Workflow GitOps
+
+**Générer un secret chiffré avec kubeseal :**
+```bash
+# 1. Récupérer la clé publique du cluster (une seule fois)
+kubeseal --fetch-cert --controller-namespace kube-system > pub-cert.pem
+
+# 2. Chiffrer le secret
+kubeseal --cert pub-cert.pem --format yaml < secret.yaml > secret-sealed.yaml
+
+# 3. Committer uniquement le fichier sealed
+git add secret-sealed.yaml
+git commit -m "feat: add sealed secret for postgres"
+# ⛔ git add secret.yaml  ← NE JAMAIS FAIRE
+```
+
+**Déployer les secrets sur le cluster :**
+```bash
+# Les SealedSecrets sont auto-déchiffrés par le controller au moment de l'apply
+kubectl apply -f postgres/secret-sealed.yaml
+kubectl apply -f redis/secret-sealed.yaml
+
+# Vérifier que le Secret a bien été créé par le controller
+kubectl get secret postgres-secret -n prod-database
+kubectl get secret redis-secret -n prod-database
+```
+
+**Modifier un secret existant :**
+```bash
+# 1. Modifier secret.yaml localement
+# 2. Rechiffrer
+kubeseal --cert pub-cert.pem --format yaml < secret.yaml > secret-sealed.yaml
+# 3. Appliquer
+kubectl apply -f secret-sealed.yaml
+```
+
+> **Point Clé** : Un SealedSecret est lié au **namespace + nom** du secret cible. Si vous changez le nom ou le namespace, vous devez rechiffrer.
+
+---
+
 ## 🎓 Résumé des Commandes
 
 Si vous devez remonter l'infra stockage :
@@ -87,6 +188,10 @@ Si vous devez remonter l'infra stockage :
 3.  Déployer les Bases de Données :
     ```bash
     kubectl apply -f k8s/database/namespace.yaml
+    # Sealed Secrets en premier (les StatefulSets en ont besoin)
+    kubectl apply -f k8s/database/postgres/secret-sealed.yaml
+    kubectl apply -f k8s/database/redis/secret-sealed.yaml
+    # Puis les ressources
     kubectl apply -f k8s/database/postgres/
     kubectl apply -f k8s/database/redis/
     ```
