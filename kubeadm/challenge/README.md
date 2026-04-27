@@ -46,7 +46,7 @@ Le projet est divisé en 4 couches logiques :
 
 * **Autoscaling (HPA) :** Configuration du scaling automatique du Backend basé sur l'utilisation CPU.
 * **Maintenance :** Création d'un `CronJob` pour simuler une sauvegarde de la base de données chaque nuit.
-* **Observabilité :** Déploiement d'un `DaemonSet` en installent `Prometheus`, `Grafana` et `Loki` 
+* **Observabilité :** Déploiement d'un `DaemonSet` en installent `Prometheus`, `Grafana`, `Loki` et `Kubecost`
 
 
 ### 🛠️ Phase 5 : Administration & Maintenance (Le "Boss de fin" CKA)

@@ -1,0 +1,73 @@
+# ---- 1. PROMETHEUS ----
+prometheus:
+  prometheusSpec:
+    # Rétention des métriques (tu avais dit 3 mois — quelle valeur ?)
+    retention: 72h
+    
+    # Stockage persistant (si le pod redémarre, on ne perd pas les données)
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: nfs-client
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 2Gi
+    
+    resources:
+      requests:
+        memory: 512Mi
+        cpu: 200m
+      limits:
+        memory: 1Gi
+        cpu: 500m
+    
+    # Scraper TOUS les namespaces du cluster
+    serviceMonitorNamespaceSelector: {}
+    podMonitorNamespaceSelector: {}
+    serviceMonitorSelector: {}
+    podMonitorSelector: {}
+
+# ---- 2. GRAFANA ----
+grafana:
+  enabled: true
+  
+  # Persistance du dashboard
+  persistence:
+    enabled: true
+    storageClassName: nfs-client
+    size: 1Gi
+  
+  # Mot de passe admin — bonne pratique : ne PAS le mettre en clair ici
+  # On utilisera un Secret Kubernetes existant
+  admin:
+    existingSecret: "grafana-secret"
+    userKey: admin-user
+    passwordKey: admin-password
+  
+  resources:
+    requests:
+      memory: 128Mi
+      cpu: 50m
+    limits: 
+      memory: 256Mi
+      cpu: 200m
+
+# ---- 3. ALERTMANAGER ----
+alertmanager:
+  alertmanagerSpec:
+    resources:
+      requests:
+        memory: 50Mi
+        cpu: 10m
+  
+# ---- 4. NODE EXPORTER (DaemonSet) ----
+nodeExporter:
+  enabled: true 
+
+# ---- 5. KUBE STATE METRICS ----
+kube-state-metrics:
+  resources:
+    requests:
+      memory: 80Mi
+      cpu: 10m
